@@ -64,7 +64,7 @@ This will open a browser window allowing you to authorize your server with your 
 Clone this repository and give the scripts execution permissions:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/Cloudflare-Tunnel-Systemd-Manager.git
+git clone https://github.com/abhisekadhikari/cloudflare-tunnel-service-manager.git
 cd Cloudflare-Tunnel-Systemd-Manager
 chmod +x *.sh
 ```
@@ -156,3 +156,4 @@ The cleanup script will:
 # ⚖️ License
 
 This project is licensed under the **MIT License**. See the `LICENSE` file for details.
+
