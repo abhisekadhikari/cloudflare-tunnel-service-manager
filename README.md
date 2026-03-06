@@ -6,29 +6,60 @@ A professional-grade Bash toolkit to deploy and manage Cloudflare Tunnels as **a
 
 ## ✨ Features
 
-- **🔄 Auto-Boot:** Starts your tunnel automatically when the server restarts.
-- **🛡️ Self-Healing:** Systemd monitors the process and restarts it if it crashes.
-- **🚥 Smart Health Check:** Uses `netcat` to verify your local port is active before starting the tunnel.
-- **📂 Organized Configs:** Moves credentials and YAML configs to `/etc/cloudflared/`.
-- **📜 Persistent Logging:** Dedicated logs stored in `/var/log/cloudflared-[appname].log`.
-- **🧹 Easy Cleanup:** Includes a script to safely remove all traces of the service and DNS.
+* **🔄 Auto-Boot:** Starts your tunnel automatically when the server restarts.
+* **🛡️ Self-Healing:** Systemd monitors the process and restarts it if it crashes.
+* **🚥 Smart Health Check:** Uses `netcat` to verify your local port is active before starting the tunnel.
+* **📂 Organized Configs:** Moves credentials and YAML configs to `/etc/cloudflared/`.
+* **📜 Persistent Logging:** Dedicated logs stored in `/var/log/cloudflared-[appname].log`.
+* **🧹 Easy Cleanup:** Includes a script to safely remove all traces of the service and DNS.
 
 ---
 
-## 🚀 Quick Start
+# 🚀 Quick Start
 
-### 1. Prerequisites
+## 1. Install `cloudflared`
 
-Ensure you have `cloudflared` installed and you are authenticated:
+Install `cloudflared` from the official Cloudflare package repository.
+
+Official repository documentation:
+https://pkg.cloudflare.com/index.html
+
+### Ubuntu / Debian
 
 ```bash
-# Authenticate with Cloudflare
-cloudflared tunnel login
+# Add Cloudflare GPG key
+sudo mkdir -p --mode=0755 /usr/share/keyrings
+curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg \
+  | sudo tee /usr/share/keyrings/cloudflare-main.gpg >/dev/null
+
+# Add Cloudflare repository
+echo "deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared $(lsb_release -cs) main" \
+  | sudo tee /etc/apt/sources.list.d/cloudflared.list
+
+# Install cloudflared
+sudo apt update
+sudo apt install cloudflared
+```
+
+Verify installation:
+
+```bash
+cloudflared --version
 ```
 
 ---
 
-### 2. Installation
+## 2. Authenticate with Cloudflare
+
+```bash
+cloudflared tunnel login
+```
+
+This will open a browser window allowing you to authorize your server with your Cloudflare account.
+
+---
+
+## 3. Installation
 
 Clone this repository and give the scripts execution permissions:
 
@@ -40,7 +71,7 @@ chmod +x *.sh
 
 ---
 
-### 3. Deploy a Tunnel
+## 4. Deploy a Tunnel
 
 Run the setup script with `sudo`. It requires three arguments:
 
@@ -49,31 +80,52 @@ Run the setup script with `sudo`. It requires three arguments:
 sudo ./setup-tunnel.sh myapp example.com 8080
 ```
 
+Example:
+
+```bash
+sudo ./setup-tunnel.sh api api.example.com 3000
+```
+
+This script will:
+
+* Create a Cloudflare tunnel
+* Generate credentials
+* Configure DNS routing
+* Move configuration files to `/etc/cloudflared/`
+* Create a **systemd service**
+* Enable automatic startup on boot
+
 ---
 
-## 🛠️ Management
+# 🛠️ Management
 
-**Check if the tunnel is running:**
+### Check if the tunnel is running
 
 ```bash
 systemctl status cloudflared-myapp
 ```
 
-**Monitor live traffic/errors:**
+### Monitor live traffic or errors
 
 ```bash
 tail -f /var/log/cloudflared-myapp.log
 ```
 
-**Restart the tunnel:**
+### Restart the tunnel
 
 ```bash
 sudo systemctl restart cloudflared-myapp
 ```
 
+### Stop the tunnel
+
+```bash
+sudo systemctl stop cloudflared-myapp
+```
+
 ---
 
-## 🗑️ Uninstallation
+# 🗑️ Uninstallation
 
 To completely remove the service, configuration files, and the DNS route from Cloudflare:
 
@@ -82,18 +134,25 @@ To completely remove the service, configuration files, and the DNS route from Cl
 sudo ./cleanup.sh myapp example.com
 ```
 
----
+The cleanup script will:
 
-## 📁 File Structure
-
-| File | Description |
-|------|-------------|
-| `setup-tunnel.sh` | Main deployment script (Creates tunnel, DNS, and Systemd unit). |
-| `cleanup.sh` | Uninstaller (Stops service and cleans up system files). |
-| `README.md` | Documentation and usage guide. |
+* Stop and disable the systemd service
+* Remove `/etc/cloudflared/` configs
+* Delete logs
+* Remove DNS routing from Cloudflare
 
 ---
 
-## ⚖️ License
+# 📁 File Structure
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+| File              | Description                                                    |
+| ----------------- | -------------------------------------------------------------- |
+| `setup-tunnel.sh` | Main deployment script (creates tunnel, DNS, and systemd unit) |
+| `cleanup.sh`      | Uninstaller (stops service and cleans system files)            |
+| `README.md`       | Documentation and usage guide                                  |
+
+---
+
+# ⚖️ License
+
+This project is licensed under the **MIT License**. See the `LICENSE` file for details.
