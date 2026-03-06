@@ -65,7 +65,7 @@ Clone this repository and give the scripts execution permissions:
 
 ```bash
 git clone https://github.com/abhisekadhikari/cloudflare-tunnel-service-manager.git
-cd Cloudflare-Tunnel-Systemd-Manager
+cd cloudflare-tunnel-service-manager
 chmod +x *.sh
 ```
 
@@ -156,4 +156,5 @@ The cleanup script will:
 # ⚖️ License
 
 This project is licensed under the **MIT License**. See the `LICENSE` file for details.
+
 
